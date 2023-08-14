@@ -1,30 +1,11 @@
 const mask = document.querySelector('aside');
-const delay = convertSpeed(mask);
+
 const target = 'figure';
 const num = 200;
 let count = 0;
 
 const imgDOM = createImgs(target, num);
-//동적 imgDOM 생성
-imgDOM.forEach((img) => {
-	img.onload = () => {
-		count++;
-		const percent = parseInt((count / 200) * 100);
-		mask.querySelector('p').innerHTML = percent + '%';
-		mask.querySelector('.bar').style.width = percent + '%';
-		if (percent === 100) {
-			console.log('이미지 수스 로딩 완료');
-			mask.classList.add('off');
-
-			setTimeout(() => {
-				mask.remove();
-			}, delay);
-		}
-	};
-	img.onerror = () => {
-		console.log('이미지 출력중 에러');
-	};
-});
+showMask();
 
 //마우스 무브시 포인터 좌표값 200분율로 변경
 window.addEventListener('mousemove', (e) => matchMove(imgDOM, 200, e));
@@ -42,6 +23,38 @@ function createImgs(target, num) {
 	frame.innerHTML = imgs;
 
 	return frame.querySelectorAll('img');
+}
+
+function showMask() {
+	const mask = document.createElement('aside');
+	mask.style.transitionDuration = '0.5s';
+	const delay = convertSpeed(mask);
+	mask.innerHTML = `<aside>
+	<p>0%</p>
+	<div class="bar"></div>
+</aside>	
+	`;
+	document.body.append(mask);
+
+	imgDOM.forEach((img) => {
+		img.onload = () => {
+			count++;
+			const percent = parseInt((count / 200) * 100);
+			mask.querySelector('p').innerHTML = percent + '%';
+			mask.querySelector('.bar').style.width = percent + '%';
+			if (percent === 100) {
+				console.log('이미지 수스 로딩 완료');
+				mask.classList.add('off');
+
+				setTimeout(() => {
+					mask.remove();
+				}, delay);
+			}
+		};
+		img.onerror = () => {
+			console.log('이미지 출력중 에러');
+		};
+	});
 }
 
 function matchMove(arrEL, num, e) {
